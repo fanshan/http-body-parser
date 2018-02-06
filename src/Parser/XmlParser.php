@@ -25,10 +25,6 @@ class XmlParser extends AbstractParser
      */
     public function parse(StreamInterface $stream)
     {
-        if ($stream->getSize() == 0) {
-            return null;
-        }
-
         $doc = new \DOMDocument();
 
         try {

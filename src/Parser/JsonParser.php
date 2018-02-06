@@ -23,10 +23,6 @@ class JsonParser extends AbstractParser
      */
     public function parse(StreamInterface $stream)
     {
-        if ($stream->getSize() == 0) {
-            return null;
-        }
-
         $decoded = json_decode($stream->getContents(), true);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
