@@ -2,6 +2,9 @@
 
 namespace ObjectivePHP\Http\BodyParser\Parser;
 
+use ObjectivePHP\Http\BodyParser\AbstractParser;
+use ObjectivePHP\Http\BodyParser\Exception\ParseException;
+
 /**
  * Class ParserFactory
  * @package ObjectivePHP\Http\BodyParser\Parser
@@ -9,34 +12,19 @@ namespace ObjectivePHP\Http\BodyParser\Parser;
 class ParserFactory
 {
     /**
-     * @var array
+     * @param string $class
+     * @param string[] ...$contentTypes
+     * @return AbstractParser|ParserDecorator
+     * @throws ParseException
      */
-    protected static $authorized = [
-        'json', 'xml'
-    ];
-
-    /**
-     * @param $type
-     * @return string
-     * @throws \Exception
-     */
-    protected static function getClass($type)
+    public static function create(string $class, string ...$contentTypes)
     {
-        if (in_array(strtolower($type), self::$authorized)) {
-            return ucfirst("ObjectivePHP\Http\BodyParser\Parser\\".$type.'Parser');
-        }
-
-        throw new \Exception('Parser type doesnt exists');
-    }
-
-    /**
-     * @param $type
-     * @return ParserDecorator
-     */
-    public static function create($type)
-    {
-        $class  = self::getClass($type);
+        /** @var AbstractParser $parser */
         $parser = new $class();
+        if (!$parser instanceof AbstractParser) {
+            throw new ParseException("Parser $class isnt define");
+        }
+        $parser->addContentType(...$contentTypes);
         $parser = new ParserDecorator($parser);
 
         return $parser;

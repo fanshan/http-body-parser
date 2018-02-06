@@ -5,6 +5,7 @@ namespace Tests\ObjectivePHP\Http\BodyParser\Parser;
 use GuzzleHttp\Psr7\BufferStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use ObjectivePHP\Http\BodyParser\Exception\ParseException;
+use ObjectivePHP\Http\BodyParser\Parser\JsonParser;
 use ObjectivePHP\Http\BodyParser\Parser\ParserFactory;
 use ObjectivePHP\Http\BodyParser\Parser\XmlParser;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +18,7 @@ class ParserDecoratorTest extends TestCase
 {
     public function testParseJson()
     {
-        $parser = ParserFactory::create('json');
+        $parser = ParserFactory::create(JsonParser::class);
 
         $request = new ServerRequest('POST', 'test', ['Content-Type' => 'application/json']);
 
@@ -29,7 +30,7 @@ class ParserDecoratorTest extends TestCase
         $stream = new BufferStream();
         $stream->write(json_encode(['test' => 'test']));
 
-        $parser = ParserFactory::create('json');
+        $parser = ParserFactory::create(JsonParser::class);
 
         $this->assertEquals(['test' => 'test'], $parser->parse($stream));
     }
@@ -39,7 +40,7 @@ class ParserDecoratorTest extends TestCase
         $stream = new BufferStream();
         $stream->write('not json');
 
-        $parser = ParserFactory::create('json');
+        $parser = ParserFactory::create(JsonParser::class);
 
         $this->expectException(ParseException::class);
         $this->expectExceptionMessage('JSON parser error: Syntax error');
@@ -52,9 +53,19 @@ class ParserDecoratorTest extends TestCase
         $stream = new BufferStream();
         $stream->write('');
 
-        $parser = ParserFactory::create('json');
+        $parser = ParserFactory::create(JsonParser::class);
 
         $this->assertNull($parser->parse($stream));
+    }
+
+
+    public function testParseXml()
+    {
+        $parser = ParserFactory::create(XmlParser::class);
+
+        $request = new ServerRequest('POST', 'test', ['Content-Type' => 'application/rss+xml']);
+
+        $this->assertTrue($parser->doesHandle($request));
     }
 
 
@@ -63,7 +74,7 @@ class ParserDecoratorTest extends TestCase
         $stream = new BufferStream();
         $stream->write('<xml>test</xml>');
 
-        $parser = ParserFactory::create('xml');
+        $parser = ParserFactory::create(XmlParser::class);
 
         $this->assertEquals("<?xml version=\"1.0\"?>\n<xml>test</xml>\n", $parser->parse($stream)->saveXML());
     }
@@ -73,7 +84,7 @@ class ParserDecoratorTest extends TestCase
         $stream = new BufferStream();
         $stream->write('not xml');
 
-        $parser = ParserFactory::create('xml');
+        $parser = ParserFactory::create(XmlParser::class);
 
         $this->expectException(ParseException::class);
         $this->expectExceptionMessage(
@@ -90,9 +101,20 @@ MSG
         $stream = new BufferStream();
         $stream->write('');
 
-        $parser = ParserFactory::create('xml');
+        $parser = ParserFactory::create(XmlParser::class);
 
         $this->assertNull($parser->parse($stream));
     }
+
+    public function testNotParser()
+    {
+        $this->expectException(ParseException::class);
+        ParserFactory::create(BrbTest::class);
+    }
+
+}
+
+class BrbTest
+{
 
 }

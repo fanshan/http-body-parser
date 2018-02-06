@@ -32,4 +32,12 @@ interface ParserInterface
      * @return null|array|object The deserialized body parameters, if any. These will typically be an array or object.
      */
     public function parse(StreamInterface $stream);
+
+    /**
+     * This method add one or more content types to the parser
+     *
+     * @param string[] ...$contentTypes
+     * @return self
+     */
+    public function addContentType(string ...$contentTypes);
 }
