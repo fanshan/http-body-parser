@@ -1,0 +1,23 @@
+{
+    "name": "objective-php/http-body-parser",
+    "description": "Component that parse and deserialize the HTTP request body content",
+    "type": "library",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Vincent Simonin",
+            "email": "vsi@opcoding.eu"
+        }
+    ],
+    "require": {
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "ObjectivePHP\\Http\\BodyParser\\": "src/"
+        }
+    }
+}
